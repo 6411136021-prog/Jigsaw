@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hand-Tracking Jigsaw Space | เกมต่อจิ๊กซอว์อัจฉริยะ</title>
+  
+  <!-- Google Fonts for Modern Premium Look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- MediaPipe CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Virtual cursor for hand tracking pointer -->
+  <div id="virtual-cursor" class="virtual-cursor">
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+  </div>
+
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="logo-text">Jigsaw <span>Handspace</span></h1>
+      <p class="logo-desc">เล่นจิ๊กซอว์ด้วยภาพตัวคุณเอง ผ่านการควบคุมด้วยมือจับท่าทางอัจฉริยะ</p>
+    </header>
+
+    <!-- Screen 1: Landing / Setup Screen -->
+    <section id="setup-screen" class="screen active">
+      <div class="grid-layout-setup">
+        <!-- Webcam Preview Card -->
+        <div class="glass-card camera-card">
+          <div class="card-header">
+            <h3><span class="icon">📷</span> กล้องเว็บแคม</h3>
+            <span class="badge live-badge">LIVE</span>
+          </div>
+          <div class="camera-stream-wrapper">
+            <video id="setup-video" autoplay playsinline muted></video>
+            <canvas id="setup-canvas"></canvas>
+            <div id="countdown-overlay" class="countdown-overlay hidden">3</div>
+            <div id="camera-loading" class="camera-loading">
+              <div class="spinner"></div>
+              <p>กำลังเปิดใช้งานกล้อง...</p>
+            </div>
+          </div>
+          <div class="camera-controls">
+            <button id="btn-capture" class="btn btn-primary btn-large">
+              <span class="btn-icon">⚡</span> ถ่ายภาพเล่นเกม
+            </button>
+            <div class="divider">หรือ</div>
+            <div class="file-upload-wrapper">
+              <label for="file-upload" class="btn btn-secondary">
+                <span class="btn-icon">📁</span> เลือกรูปจากเครื่องคอมพิวเตอร์
+              </label>
+              <input type="file" id="file-upload" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <!-- Configurations & Instructions Card -->
+        <div class="glass-card config-card">
+          <div class="card-header">
+            <h3><span class="icon">⚙️</span> ตั้งค่าเกม</h3>
+          </div>
+          <div class="config-section">
+            <label class="config-label">ระดับความยาก (ขนาดตาราง)</label>
+            <div class="difficulty-selector">
+              <button class="difficulty-btn active" data-grid="3">
+                <span class="diff-level">ง่าย</span>
+                <span class="diff-grid">3 x 3 (9 ชิ้น)</span>
+              </button>
+              <button class="difficulty-btn" data-grid="4">
+                <span class="diff-level">ปานกลาง</span>
+                <span class="diff-grid">4 x 4 (16 ชิ้น)</span>
+              </button>
+              <button class="difficulty-btn" data-grid="5">
+                <span class="diff-level">ยาก</span>
+                <span class="diff-grid">5 x 5 (25 ชิ้น)</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="instruction-section">
+            <h4><span class="icon">🖐️</span> วิธีการควบคุมด้วยมือ (Hand Control)</h4>
+            <ul class="instruction-list">
+              <li>
+                <div class="gesture-icon">🖐️</div>
+                <div class="gesture-detail">
+                  <strong>เลื่อนนิ้วชี้ (Hover)</strong>
+                  <span>ชี้ปลายนิ้วชี้เพื่อควบคุมตัวชี้ (Cursor) ไปยังชิ้นจิ๊กซอว์</span>
+                </div>
+              </li>
+              <li>
+                <div class="gesture-icon">👌</div>
+                <div class="gesture-detail">
+                  <strong>จีบมือ (Grab & Hold)</strong>
+                  <span>บีบนิ้วชี้กับนิ้วโป้งแตะกันเพื่อ "หยิบ" ชิ้นจิ๊กซอว์ค้างไว้</span>
+                </div>
+              </li>
+              <li>
+                <div class="gesture-icon">🖐️</div>
+                <div class="gesture-detail">
+                  <strong>ปล่อยมือ (Release)</strong>
+                  <span>แยกนิ้วโป้งกับนิ้วชี้ออกจากกันเพื่อ "วาง" จิ๊กซอว์</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 2: Game Board Screen -->
+    <section id="game-screen" class="screen">
+      <div class="grid-layout-game">
+        <!-- Sidebar: Video Tracking Monitor -->
+        <div class="glass-card sidebar-card">
+          <div class="card-header">
+            <h3><span class="icon">👁️</span> ตรวจจับการเคลื่อนไหว</h3>
+          </div>
+          <div class="tracking-monitor-wrapper">
+            <video id="game-video" autoplay playsinline muted class="hidden-video"></video>
+            <canvas id="hand-canvas"></canvas>
+            <div class="tracking-overlay-data">
+              <span id="hand-status" class="badge danger-badge">ไม่พบมือ</span>
+              <span id="pinch-status" class="badge">ปล่อย (Open)</span>
+            </div>
+          </div>
+
+          <div class="gesture-guide-card">
+            <h4>ท่าทางปัจจุบัน</h4>
+            <div id="gesture-visualizer" class="gesture-visualizer">
+              <div class="visualizer-circle">🖐️</div>
+              <p id="gesture-name">มองหากล้อง...</p>
+            </div>
+          </div>
+
+          <div class="game-actions">
+            <button id="btn-toggle-guide" class="btn btn-secondary">
+              👁️ ซ่อน/แสดงไกด์จางๆ
+            </button>
+            <button id="btn-reset" class="btn btn-secondary">
+              🔄 สลับชิ้นส่วนใหม่
+            </button>
+            <button id="btn-back-to-setup" class="btn btn-danger">
+              ⬅️ กลับหน้าแรก
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div class="glass-card board-card">
+          <div class="board-header">
+            <div class="game-stats">
+              <div class="stat-box">
+                <span class="stat-label">เวลาที่ใช้</span>
+                <span id="stat-time" class="stat-value">00:00</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">ต่อสำเร็จ</span>
+                <span id="stat-progress" class="stat-value">0 / 9</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="puzzle-area-container" id="puzzle-area-container">
+            <!-- Scramble Area & Board Area inside here -->
+            <div class="puzzle-board-wrapper">
+              <div id="puzzle-board"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Victory Screen / Overlay -->
+    <section id="victory-screen" class="screen">
+      <div class="glass-card victory-card animate-pop-in">
+        <div class="confetti-container">
+          <canvas id="victory-confetti"></canvas>
+        </div>
+        <div class="victory-header">
+          <div class="crown-icon">👑</div>
+          <h2>สุดยอดฝีมือ!</h2>
+          <p>คุณแก้เกมพัซเซิลจิ๊กซอว์ได้สำเร็จ!</p>
+        </div>
+        <div class="victory-details">
+          <div class="victory-image-preview">
+            <img id="victory-photo-preview" src="" alt="คุณผู้ชนะ">
+          </div>
+          <div class="victory-stats">
+            <div class="victory-stat-item">
+              <span class="v-label">เวลาที่ใช้</span>
+              <span id="victory-time" class="v-val">01:23</span>
+            </div>
+            <div class="victory-stat-item">
+              <span class="v-label">ขนาดตาราง</span>
+              <span id="victory-difficulty" class="v-val">4 x 4</span>
+            </div>
+          </div>
+        </div>
+        <div class="victory-actions">
+          <button id="btn-play-again" class="btn btn-primary btn-large">เล่นอีกรอบ</button>
+          <button id="btn-new-photo" class="btn btn-secondary btn-large">ถ่ายรูปใหม่</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
