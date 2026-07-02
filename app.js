@@ -116,57 +116,80 @@ document.addEventListener('DOMContentLoaded', () => {
       audioCtx.resume();
     }
     
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    
     const now = audioCtx.currentTime;
     
     if (type === 'grab') {
-      // High-pitched slide up
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(400, now);
-      osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-      osc.start(now);
-      osc.stop(now + 0.1);
-    } else if (type === 'release') {
-      // Soft release
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(500, now);
-      osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-      osc.start(now);
-      osc.stop(now + 0.08);
-    } else if (type === 'snap') {
-      // Satisfying click/pop
+      // Mystical sweep up
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(300, now);
-      osc.frequency.setValueAtTime(450, now + 0.05);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+      osc.frequency.setValueAtTime(450, now);
+      osc.frequency.exponentialRampToValueAtTime(900, now + 0.15);
+      
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      
       osc.start(now);
-      osc.stop(now + 0.15);
+      osc.stop(now + 0.16);
+    } else if (type === 'release') {
+      // Wind-down/fade spell
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+      
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      
+      osc.start(now);
+      osc.stop(now + 0.13);
+    } else if (type === 'snap') {
+      // Magic crystal chime/ping
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, now); // B5 Note (pure crystal tone)
+      
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1479.98, now); // F#6 (perfect fifth harmonic)
+      
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.36);
+      osc2.stop(now + 0.36);
     } else if (type === 'victory') {
-      // Upward arpeggio
-      const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, index) => {
-        const noteOsc = audioCtx.createOscillator();
-        const noteGain = audioCtx.createGain();
-        noteOsc.connect(noteGain);
-        noteGain.connect(audioCtx.destination);
+      // Heavenly arpeggio of magic spells
+      const wizardScale = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51, 1567.98]; // C5, E5, G5, B5, C6, E6, G6
+      wizardScale.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
         
-        noteOsc.type = 'sine';
-        noteOsc.frequency.setValueAtTime(freq, now + index * 0.08);
-        noteGain.gain.setValueAtTime(0.15, now + index * 0.08);
-        noteGain.gain.linearRampToValueAtTime(0.01, now + index * 0.08 + 0.25);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + index * 0.07);
         
-        noteOsc.start(now + index * 0.08);
-        noteOsc.stop(now + index * 0.08 + 0.3);
+        gain.gain.setValueAtTime(0.12, now + index * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.07 + 0.4);
+        
+        osc.start(now + index * 0.07);
+        osc.stop(now + index * 0.07 + 0.42);
       });
     }
   }
@@ -190,13 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
       setupVideo.onplaying = hideLoading;
       setupVideo.oncanplay = hideLoading;
       
-      startSetupTracking();
+      await startSetupTracking();
     } catch (err) {
       console.error("Error accessing camera: ", err);
       cameraLoading.innerHTML = `
         <div style="color: var(--danger-color); text-align: center; padding: 20px;">
-          <p>⚠️ ไม่สามารถเข้าถึงกล้องเว็บแคมได้</p>
-          <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-secondary);">โปรดตรวจสอบสิทธิ์การใช้งานกล้องในเบราว์เซอร์ของคุณ</p>
+          <p>⚠️ คาถาเปิดมิติกล้องล้มเหลว (ไม่สามารถเข้าถึงกล้องได้)</p>
+          <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-secondary);">โปรดตรวจสอบสิทธิ์การอนุญาตให้กระจกวิเศษเข้าถึงกล้องในเบราว์เซอร์</p>
         </div>
       `;
     }
@@ -214,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Setup screen hand tracking (two-hand framing mode)
-  function startSetupTracking() {
+  async function startSetupTracking() {
     trackingActive = true;
     
     if (!handsModel) {
@@ -236,6 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupCanvas.width = 640;
     setupCanvas.height = 480;
+
+    // Explicitly request video stream to handle camera blocked/missing errors correctly
+    const constraints = {
+      video: { width: 640, height: 480, facingMode: 'user' },
+      audio: false
+    };
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    setupVideo.srcObject = localStream;
 
     setupCameraHelper = new Camera(setupVideo, {
       onFrame: async () => {
@@ -285,7 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = indexTip.y - thumbTip.y;
       const pinchDist = Math.sqrt(dx*dx + dy*dy);
       
-      handlePinchClick(pinchDist);
+      const handScale = getHandScale(hand);
+      const normalizedPinch = pinchDist / handScale;
+      
+      handlePinchClick(normalizedPinch);
     } else {
       isPinching = false;
       wasPinchingForClick = false;
@@ -327,15 +361,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentCropBox = { left, top, size };
 
-        // Draw crop frame guide (Neon cyan glows)
-        setupCanvasCtx.strokeStyle = '#00f0ff';
+        // Draw crop frame guide (Magic gold and purple glows)
+        setupCanvasCtx.strokeStyle = '#e5b323';
         setupCanvasCtx.lineWidth = 4;
-        setupCanvasCtx.shadowColor = '#00f0ff';
+        setupCanvasCtx.shadowColor = '#9d50ff';
         setupCanvasCtx.shadowBlur = 15;
         setupCanvasCtx.strokeRect(left, top, size, size);
 
         // Draw corner brackets
-        setupCanvasCtx.fillStyle = '#00f0ff';
+        setupCanvasCtx.fillStyle = '#e5b323';
         const len = 20;
         setupCanvasCtx.fillRect(left - 2, top - 2, len, 4);
         setupCanvasCtx.fillRect(left - 2, top - 2, 4, len);
@@ -380,7 +414,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dx = indexTip.x - thumbTip.x;
     const dy = indexTip.y - thumbTip.y;
     const dist = Math.sqrt(dx*dx + dy*dy);
-    return dist < 0.040;
+    
+    const handScale = getHandScale(hand);
+    return (dist / handScale) < 0.25;
   }
 
   function captureFramedPhoto() {
@@ -1090,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (landmarks && landmarks.length > 0) {
       lastHandDetectedTime = Date.now();
-      handStatus.textContent = "เชื่อมต่อแล้ว";
+      handStatus.textContent = "เชื่อมต่อสื่อนำเวท";
       handStatus.className = "badge success-badge";
       
       const hand = landmarks[0];
@@ -1122,13 +1158,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Hand not found or lost
       const now = Date.now();
       if (now - lastHandDetectedTime > 1500) {
-        handStatus.textContent = "ไม่พบมือ";
+        handStatus.textContent = "ไม่พบสื่อนำเวท";
         handStatus.className = "badge danger-badge";
-        pinchStatus.textContent = "ปล่อย (Open)";
+        pinchStatus.textContent = "คลายเวท (Open)";
         pinchStatus.className = "badge";
         gestureVisualizer.textContent = "🖐️";
         gestureVisualizer.classList.remove('active');
-        gestureName.textContent = "กรุณายกมือขึ้นระดับกล้อง";
+        gestureName.textContent = "กรุณายกสื่อนำเวท (มือ) ขึ้นส่องกระจก";
         
         // Auto-release if hand was lost while dragging
         if (isPinching) {
@@ -1140,6 +1176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function getHandScale(hand) {
+    const wrist = hand[0];
+    const middleMcp = hand[9];
+    const dx = middleMcp.x - wrist.x;
+    const dy = middleMcp.y - wrist.y;
+    return Math.sqrt(dx*dx + dy*dy) || 0.1;
+  }
+
   // Reusable skeleton drawer for both screens
   function drawHandSkeletonsOnCtx(ctx, hand) {
     ctx.save();
@@ -1147,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Draw connections
     if (window.drawConnectors && window.HAND_CONNECTIONS) {
       window.drawConnectors(ctx, hand, window.HAND_CONNECTIONS, {
-        color: '#7000ff',
+        color: '#9d50ff', // Wizard Purple
         lineWidth: 2
       });
     }
@@ -1155,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Draw landmarks
     if (window.drawLandmarks) {
       window.drawLandmarks(ctx, hand, {
-        color: '#00f0ff',
+        color: '#e5b323', // Magic Gold
         lineWidth: 1,
         radius: 3
       });
@@ -1166,8 +1210,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Process Pinch Grab/Release logic
   function handlePinchGesture(dist) {
-    const PINCH_CLOSE_THRESHOLD = 0.035; // Pinched together (3.5% of screen in 2D)
-    const PINCH_OPEN_THRESHOLD = 0.050;  // Released (5.0% of screen in 2D)
+    const PINCH_CLOSE_THRESHOLD = 0.25; // Relative to hand scale
+    const PINCH_OPEN_THRESHOLD = 0.38;  // Relative to hand scale
 
     // Current pointer coordinates relative to the interactive board container
     const containerRect = puzzleAreaContainer.getBoundingClientRect();
@@ -1178,11 +1222,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Pinch Grab Started!
       isPinching = true;
       virtualCursor.classList.add('grabbing');
-      pinchStatus.textContent = "หนีบ (Pinch)";
+      pinchStatus.textContent = "ร่ายมนต์ยึดจับ (Grab)";
       pinchStatus.className = "badge success-badge";
       gestureVisualizer.textContent = "👌";
       gestureVisualizer.classList.add('active');
-      gestureName.textContent = "หยิบจิ๊กซอว์แล้ว!";
+      gestureName.textContent = "ผนึกอัญเชิญสำแดงผล!";
       playSound('grab');
 
       // Attempt to pick up a piece
@@ -1197,11 +1241,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Pinch Released!
       isPinching = false;
       virtualCursor.classList.remove('grabbing');
-      pinchStatus.textContent = "ปล่อย (Open)";
+      pinchStatus.textContent = "คลายมนต์สะกด (Release)";
       pinchStatus.className = "badge";
       gestureVisualizer.textContent = "🖐️";
       gestureVisualizer.classList.remove('active');
-      gestureName.textContent = "ปล่อยชิ้นส่วนแล้ว";
+      gestureName.textContent = "คลายมนต์ปล่อยชิ้นส่วน";
       
       dropDraggedPiece();
     }
@@ -1213,8 +1257,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function handlePinchClick(dist) {
-    const PINCH_CLOSE_THRESHOLD = 0.035;
-    const PINCH_OPEN_THRESHOLD = 0.050;
+    const PINCH_CLOSE_THRESHOLD = 0.25;
+    const PINCH_OPEN_THRESHOLD = 0.38;
     
     if (!wasPinchingForClick && dist < PINCH_CLOSE_THRESHOLD) {
       wasPinchingForClick = true;
@@ -1278,8 +1322,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // Virtual Cursor Smoother and Render Loop
+  // Virtual Cursor Smoother, Magic Particles and Render Loop
   // ==========================================================================
+  let lastParticleX = 0;
+  let lastParticleY = 0;
+
+  function createMagicParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'magic-particle';
+    
+    const colors = ['#e5b323', '#9d50ff', '#ffffff', '#e188ff', '#00ffcc'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.color = randomColor;
+    particle.style.background = `radial-gradient(circle, #fff 10%, ${randomColor} 50%, transparent 100%)`;
+    
+    const size = Math.random() * 8 + 4;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    
+    document.body.appendChild(particle);
+    
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * 40 + 10;
+    const targetX = Math.cos(angle) * distance;
+    const targetY = Math.sin(angle) * distance;
+    
+    requestAnimationFrame(() => {
+      particle.style.transform = `translate(${targetX}px, ${targetY}px) scale(0)`;
+      particle.style.opacity = '0';
+    });
+    
+    setTimeout(() => {
+      particle.remove();
+    }, 850);
+  }
+
   function startCursorAnimationLoop() {
     function animate() {
       if (trackingActive) {
@@ -1290,10 +1369,34 @@ document.addEventListener('DOMContentLoaded', () => {
         // Position the custom virtual cursor element
         virtualCursor.style.left = `${cursorX}px`;
         virtualCursor.style.top = `${cursorY}px`;
+
+        // Spawn particles based on virtual cursor movement
+        const dx = cursorX - lastParticleX;
+        const dy = cursorY - lastParticleY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist > 4) {
+          createMagicParticle(cursorX, cursorY);
+          lastParticleX = cursorX;
+          lastParticleY = cursorY;
+        }
       }
       
       requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
   }
+
+  // Mouse fallback particles trail
+  document.addEventListener('mousemove', (e) => {
+    if (!trackingActive) {
+      const dx = e.clientX - lastParticleX;
+      const dy = e.clientY - lastParticleY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > 6) {
+        createMagicParticle(e.clientX, e.clientY);
+        lastParticleX = e.clientX;
+        lastParticleY = e.clientY;
+      }
+    }
+  });
 });

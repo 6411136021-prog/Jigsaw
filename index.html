@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hand-Tracking Jigsaw Space | เกมต่อจิ๊กซอว์อัจฉริยะ</title>
+  <title>ห้องแห่งความลับจิ๊กซอว์พ่อมดอัจฉริยะ | Spellbound Jigsaw</title>
 
-  <!-- Google Fonts for Modern Premium Look -->
+  <!-- Google Fonts for Wizard Premium Look -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600;700&family=MedievalSharp&family=Metamorphous&display=swap"
     rel="stylesheet">
 
   <!-- MediaPipe CDNs -->
@@ -37,8 +37,11 @@
   <main class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <h1 class="logo-text">Jigsaw <span>pakpoon</span></h1>
-      <p class="logo-desc">เล่นจิ๊กซอว์ด้วยภาพตัวคุณเอง ผ่านการควบคุมด้วยมือจับท่าทางอัจฉริยะ</p>
+      <h1 class="app-logo">
+        <span class="logo-emoji">🔮</span>
+        <span class="logo-text">มนตรา<span>จิ๊กซอว์พ่อมด</span></span>
+      </h1>
+      <p class="logo-desc">ปลุกเวทมนตร์ในตัวคุณ! ร่ายคาถาต่อชิ้นส่วนรูปภาพด้วยท่าทางมืออัจฉริยะ</p>
     </header>
 
     <!-- Screen 1: Landing / Setup Screen -->
@@ -47,8 +50,8 @@
         <!-- Webcam Preview Card -->
         <div class="glass-card camera-card">
           <div class="card-header">
-            <h3><span class="icon">📷</span> กล้องเว็บแคม</h3>
-            <span class="badge live-badge">LIVE</span>
+            <h3><span class="icon">🔮</span> กระจกวิเศษส่องมิติ</h3>
+            <span class="badge live-badge">เวทมนตร์สด</span>
           </div>
           <div class="camera-stream-wrapper">
             <video id="setup-video" autoplay playsinline muted></video>
@@ -56,17 +59,17 @@
             <div id="countdown-overlay" class="countdown-overlay hidden">3</div>
             <div id="camera-loading" class="camera-loading">
               <div class="spinner"></div>
-              <p>กำลังเปิดใช้งานกล้อง...</p>
+              <p>กำลังร่ายคาถาเปิดประตูมิติ...</p>
             </div>
           </div>
           <div class="camera-controls">
             <button id="btn-capture" class="btn btn-primary btn-large">
-              <span class="btn-icon">⚡</span> ถ่ายภาพเล่นเกม
+              <span class="btn-icon">⚡</span> เริ่มพิธีร่ายคาถา (ถ่ายภาพ)
             </button>
-            <div class="divider">หรือ</div>
+            <div class="divider">หรือค้นหาขุมทรัพย์อื่น</div>
             <div class="file-upload-wrapper">
               <label for="file-upload" class="btn btn-secondary">
-                <span class="btn-icon">📁</span> เลือกรูปจากเครื่องคอมพิวเตอร์
+                <span class="btn-icon">📜</span> อัญเชิญภาพโบราณ (อัปโหลดรูป)
               </label>
               <input type="file" id="file-upload" accept="image/*">
             </div>
@@ -76,48 +79,48 @@
         <!-- Configurations & Instructions Card -->
         <div class="glass-card config-card">
           <div class="card-header">
-            <h3><span class="icon">⚙️</span> ตั้งค่าเกม</h3>
+            <h3><span class="icon">🔮</span> แท่นประกอบพิธีกรรม</h3>
           </div>
           <div class="config-section">
-            <label class="config-label">ระดับความยาก (ขนาดตาราง)</label>
+            <label class="config-label">ระดับพลังเวทของมนตรา (Difficulty)</label>
             <div class="difficulty-selector">
               <button class="difficulty-btn active" data-grid="3">
-                <span class="diff-level">ง่าย</span>
-                <span class="diff-grid">3 x 3 (9 ชิ้น)</span>
+                <span class="diff-level">🧙‍♂️ เด็กฝึกหัด</span>
+                <span class="diff-grid">3 x 3 (9 ชิ้นส่วน)</span>
               </button>
               <button class="difficulty-btn" data-grid="4">
-                <span class="diff-level">ปานกลาง</span>
-                <span class="diff-grid">4 x 4 (16 ชิ้น)</span>
+                <span class="diff-level">🧙 จอมเวท</span>
+                <span class="diff-grid">4 x 4 (16 ชิ้นส่วน)</span>
               </button>
               <button class="difficulty-btn" data-grid="5">
-                <span class="diff-level">ยาก</span>
-                <span class="diff-grid">5 x 5 (25 ชิ้น)</span>
+                <span class="diff-level">🧝 เจ้าสำนักเวท</span>
+                <span class="diff-grid">5 x 5 (25 ชิ้นส่วน)</span>
               </button>
             </div>
           </div>
 
           <div class="instruction-section">
-            <h4><span class="icon">🖐️</span> วิธีการควบคุมด้วยมือ (Hand Control)</h4>
+            <h4><span class="icon">📜</span> ตำราควบคุมเวทมนตร์ด้วยมือเปล่า</h4>
             <ul class="instruction-list">
               <li>
-                <div class="gesture-icon">🖐️</div>
+                <div class="gesture-icon">✨</div>
                 <div class="gesture-detail">
-                  <strong>เลื่อนนิ้วชี้ (Hover)</strong>
-                  <span>ชี้ปลายนิ้วชี้เพื่อควบคุมตัวชี้ (Cursor) ไปยังชิ้นจิ๊กซอว์</span>
+                  <strong>ชี้ดัชนีเวท (Hover)</strong>
+                  <span>เหยียดนิ้วชี้เพื่อบังคับวงแหวนมนตราไปที่เป้าหมาย</span>
                 </div>
               </li>
               <li>
                 <div class="gesture-icon">👌</div>
                 <div class="gesture-detail">
-                  <strong>จีบมือ (Grab & Hold)</strong>
-                  <span>บีบนิ้วชี้กับนิ้วโป้งแตะกันเพื่อ "หยิบ" ชิ้นจิ๊กซอว์ค้างไว้</span>
+                  <strong>ร่ายคาถาจับยึด (Conjure & Hold)</strong>
+                  <span>บีบนิ้วชี้และนิ้วโป้งชนกันเพื่อสกัดแกนพลังงานดึงดูดชิ้นส่วน</span>
                 </div>
               </li>
               <li>
                 <div class="gesture-icon">🖐️</div>
                 <div class="gesture-detail">
-                  <strong>ปล่อยมือ (Release)</strong>
-                  <span>แยกนิ้วโป้งกับนิ้วชี้ออกจากกันเพื่อ "วาง" จิ๊กซอว์</span>
+                  <strong>คลายมนต์สะกด (Release Spell)</strong>
+                  <span>แบมือออกจากกันเพื่อปลดปล่อยพลังงานและปล่อยชิ้นส่วนลง</span>
                 </div>
               </li>
             </ul>
@@ -132,34 +135,34 @@
         <!-- Sidebar: Video Tracking Monitor -->
         <div class="glass-card sidebar-card">
           <div class="card-header">
-            <h3><span class="icon">👁️</span> ตรวจจับการเคลื่อนไหว</h3>
+            <h3><span class="icon">👁️</span> เนตรจอมเวท</h3>
           </div>
           <div class="tracking-monitor-wrapper">
             <video id="game-video" autoplay playsinline muted class="hidden-video"></video>
             <canvas id="hand-canvas"></canvas>
             <div class="tracking-overlay-data">
-              <span id="hand-status" class="badge danger-badge">ไม่พบมือ</span>
-              <span id="pinch-status" class="badge">ปล่อย (Open)</span>
+              <span id="hand-status" class="badge danger-badge">ไม่พบสื่อนำเวท</span>
+              <span id="pinch-status" class="badge">คลายเวท (Open)</span>
             </div>
           </div>
 
           <div class="gesture-guide-card">
-            <h4>ท่าทางปัจจุบัน</h4>
+            <h4>คาถาปัจจุบัน</h4>
             <div id="gesture-visualizer" class="gesture-visualizer">
               <div class="visualizer-circle">🖐️</div>
-              <p id="gesture-name">มองหากล้อง...</p>
+              <p id="gesture-name">กำลังอัญเชิญกระจก...</p>
             </div>
           </div>
 
           <div class="game-actions">
             <button id="btn-toggle-guide" class="btn btn-secondary">
-              👁️ ซ่อน/แสดงไกด์จางๆ
+              👁️ เผย/ซ่อน มนตราล่องหน
             </button>
             <button id="btn-reset" class="btn btn-secondary">
-              🔄 สลับชิ้นส่วนใหม่
+              🔄 ร่ายมนต์สลับชิ้นส่วน
             </button>
             <button id="btn-back-to-setup" class="btn btn-danger">
-              ⬅️ กลับหน้าแรก
+              ⬅️ กลับหอคอยเวทมนตร์
             </button>
           </div>
         </div>
@@ -169,11 +172,11 @@
           <div class="board-header">
             <div class="game-stats">
               <div class="stat-box">
-                <span class="stat-label">เวลาที่ใช้</span>
+                <span class="stat-label">เวลาปรุงยา (Time)</span>
                 <span id="stat-time" class="stat-value">00:00</span>
               </div>
               <div class="stat-box">
-                <span class="stat-label">ต่อสำเร็จ</span>
+                <span class="stat-label">ผนึกอักขระสำเร็จ</span>
                 <span id="stat-progress" class="stat-value">0 / 9</span>
               </div>
             </div>
@@ -196,28 +199,28 @@
           <canvas id="victory-confetti"></canvas>
         </div>
         <div class="victory-header">
-          <div class="crown-icon">👑</div>
-          <h2>สุดยอดฝีมือ!</h2>
-          <p>คุณแก้เกมพัซเซิลจิ๊กซอว์ได้สำเร็จ!</p>
+          <div class="crown-icon">🔮✨</div>
+          <h2>🏆 มหาจอมเวทผู้พิชิต!</h2>
+          <p>ท่านได้ปลดเครื่องพันธนาการและไขมนตราปริศนาสำเร็จแล้ว!</p>
         </div>
         <div class="victory-details">
           <div class="victory-image-preview">
-            <img id="victory-photo-preview" src="" alt="คุณผู้ชนะ">
+            <img id="victory-photo-preview" src="" alt="มหาจอมเวท">
           </div>
           <div class="victory-stats">
             <div class="victory-stat-item">
-              <span class="v-label">เวลาที่ใช้</span>
+              <span class="v-label">เวลาปรุงมนตรา</span>
               <span id="victory-time" class="v-val">01:23</span>
             </div>
             <div class="victory-stat-item">
-              <span class="v-label">ขนาดตาราง</span>
+              <span class="v-label">ระดับพลังเวท</span>
               <span id="victory-difficulty" class="v-val">4 x 4</span>
             </div>
           </div>
         </div>
         <div class="victory-actions">
-          <button id="btn-play-again" class="btn btn-primary btn-large">เล่นอีกรอบ</button>
-          <button id="btn-new-photo" class="btn btn-secondary btn-large">ถ่ายรูปใหม่</button>
+          <button id="btn-play-again" class="btn btn-primary btn-large">ร่ายคาถาอีกครั้ง</button>
+          <button id="btn-new-photo" class="btn btn-secondary btn-large">ส่องกระจกวิเศษใหม่</button>
         </div>
       </div>
     </section>
